@@ -2,7 +2,6 @@ import React, {
   ComponentPropsWithoutRef,
   DragEventHandler,
   forwardRef,
-  useCallback,
   useEffect,
   useMemo,
 } from "react";
@@ -41,7 +40,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
       }, 300);
     }, [dnd]);
 
-    const handleDragEnd = useCallback<DragEventHandler<HTMLDivElement>>(() => {
+    const handleDragEnd: DragEventHandler<HTMLDivElement> = () => {
       if (
         dndState.droppedId !== undefined &&
         dndState.draggedId !== dndState.droppedId
@@ -49,7 +48,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
         console.log(dndState);
       }
       dnd.dragEnd();
-    }, [dnd, dndState]);
+    };
 
     useEffect(() => {
       return () => {
