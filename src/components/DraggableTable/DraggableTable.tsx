@@ -10,6 +10,7 @@ import throttle from "lodash.throttle";
 import { classnames } from "tailwindcss-classnames";
 
 import { useDnD } from "./useDnD";
+import { useOrderedCells } from "./useOrderedCells";
 
 export type Props = Readonly<
   {
@@ -21,6 +22,11 @@ export type Props = Readonly<
 export const DraggableTable = forwardRef<HTMLTableElement, Props>(
   (props, ref) => {
     const { rows, columns, ...rest } = props;
+
+    const [{ orderedRows, orderedColumns }, changeOrder] = useOrderedCells(
+      rows,
+      columns
+    );
 
     const [dndState, dnd] = useDnD();
 
@@ -41,12 +47,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
     }, [dnd]);
 
     const handleDragEnd: DragEventHandler<HTMLDivElement> = () => {
-      if (
-        dndState.droppedId !== undefined &&
-        dndState.draggedId !== dndState.droppedId
-      ) {
-        console.log(dndState);
-      }
+      changeOrder(dndState);
       dnd.dragEnd();
     };
 
@@ -60,7 +61,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
       <table ref={ref} {...rest}>
         <thead>
           <tr>
-            {rows.map(({ id, value }) => (
+            {orderedRows.map(({ id, value }) => (
               <td
                 key={id}
                 className={classnames(
@@ -89,9 +90,9 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
           </tr>
         </thead>
         <tbody>
-          {columns.map((colmun, i) => (
+          {orderedColumns.map((column, i) => (
             <tr key={i}>
-              {colmun.map((item, j) => (
+              {column.map((item, j) => (
                 <td
                   key={j}
                   className={classnames("border", "border-gray-400", "p-2")}
@@ -106,4 +107,4 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
     );
   }
 );
-DraggableTable.displayName = "DraggableTable Component";
+DraggableTable.displayName = "DraggableTable";
