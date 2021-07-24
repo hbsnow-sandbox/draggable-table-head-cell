@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 
 import { Props } from ".";
 import { swap } from "../../utils/swap";
-import { DnDState } from "./useDnD";
 
 export const useOrderedCells = (
   rows: Props["rows"],
@@ -12,15 +11,12 @@ export const useOrderedCells = (
   const [orderedColumns, setOrderedColumns] = useState(columns);
 
   const changeOrder = useCallback(
-    (dndState: DnDState) => {
-      if (
-        dndState.droppedId === undefined ||
-        dndState.draggedId === dndState.droppedId
-      ) {
+    (fromId: string | undefined, toId: string | undefined) => {
+      if (fromId === undefined || toId === undefined || fromId === toId) {
         return;
       }
-      const fromIndex = rows.findIndex(({ id }) => id === dndState.draggedId);
-      const toIndex = rows.findIndex(({ id }) => id === dndState.droppedId);
+      const fromIndex = rows.findIndex(({ id }) => id === fromId);
+      const toIndex = rows.findIndex(({ id }) => id === toId);
 
       // rows を desiredSort の順に並び替える
       const resultRows = swap(rows, fromIndex, toIndex);
@@ -36,5 +32,5 @@ export const useOrderedCells = (
     [columns, rows]
   );
 
-  return [{ orderedRows, orderedColumns }, changeOrder] as const;
+  return [{ rows: orderedRows, columns: orderedColumns }, changeOrder] as const;
 };

@@ -23,10 +23,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
   (props, ref) => {
     const { rows, columns, ...rest } = props;
 
-    const [{ orderedRows, orderedColumns }, changeOrder] = useOrderedCells(
-      rows,
-      columns
-    );
+    const [ordered, changeOrder] = useOrderedCells(rows, columns);
 
     const [dndState, dnd] = useDnD();
 
@@ -41,13 +38,13 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
         const { id } = e.target.dataset;
 
         if (id) {
+          changeOrder(dndState.draggedId, dndState.hoveredId);
           dnd.dragEnter(id);
         }
       }, 300);
-    }, [dnd]);
+    }, [changeOrder, dnd, dndState]);
 
     const handleDragEnd: DragEventHandler<HTMLDivElement> = () => {
-      changeOrder(dndState);
       dnd.dragEnd();
     };
 
@@ -61,7 +58,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
       <table ref={ref} {...rest}>
         <thead>
           <tr>
-            {orderedRows.map(({ id, value }) => (
+            {ordered.rows.map(({ id, value }) => (
               <td
                 key={id}
                 className={classnames(
@@ -90,7 +87,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
           </tr>
         </thead>
         <tbody>
-          {orderedColumns.map((column, i) => (
+          {ordered.columns.map((column, i) => (
             <tr key={i}>
               {column.map((item, j) => (
                 <td
