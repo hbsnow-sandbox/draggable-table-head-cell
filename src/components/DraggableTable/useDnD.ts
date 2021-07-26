@@ -52,7 +52,7 @@ const reducer = (state: DnDState, action: Action): DnDState => {
 };
 
 export const useDnD = (state = initialState) => {
-  const [areaState, dispatch] = useReducer(reducer, state);
+  const [dndState, dispatch] = useReducer(reducer, state);
 
   const dragStart = useCallback((id: string) => {
     dispatch({ type: "dragStart", id });
@@ -75,7 +75,7 @@ export const useDnD = (state = initialState) => {
   }, []);
 
   return [
-    areaState,
+    dndState,
     { dragStart, dragEnter, dragLeave, drop, dragEnd },
   ] as const;
 };
