@@ -25,13 +25,11 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
 
     const [ordered, changeOrder] = useOrderedCells(rows, columns);
 
-    const [dndState, dnd] = useDnD();
+    const [dndState, { dragStart, dragEnter, dragLeave, drop, dragEnd }] =
+      useDnD();
 
-    const handleDragOver = useMemo(() => {
+    const dragOver = useMemo(() => {
       return throttle<DragEventHandler<HTMLDivElement>>((e) => {
-        // preventDefault しなければ、drop イベントが発火しない
-        e.preventDefault();
-
         if (!(e.target instanceof HTMLDivElement)) {
           return;
         }
@@ -39,20 +37,20 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
 
         if (id) {
           changeOrder(dndState.draggedId, dndState.hoveredId);
-          dnd.dragEnter(id);
+          dragEnter(id);
         }
       }, 300);
-    }, [changeOrder, dnd, dndState]);
+    }, [changeOrder, dragEnter, dndState.draggedId, dndState.hoveredId]);
 
     const handleDragEnd: DragEventHandler<HTMLDivElement> = () => {
-      dnd.dragEnd();
+      dragEnd();
     };
 
     useEffect(() => {
       return () => {
-        handleDragOver.cancel();
+        dragOver.cancel();
       };
-    }, [handleDragOver]);
+    }, [dragOver]);
 
     return (
       <table ref={ref} {...rest}>
@@ -69,10 +67,13 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
               >
                 <div
                   draggable
-                  onDragStart={() => dnd.dragStart(id)}
-                  onDragOver={handleDragOver}
-                  onDragLeave={() => dnd.dragLeave()}
-                  onDrop={() => dnd.drop(id)}
+                  onDragStart={() => dragStart(id)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    dragOver(e);
+                  }}
+                  onDragLeave={() => dragLeave()}
+                  onDrop={() => drop(id)}
                   onDragEnd={handleDragEnd}
                   className={classnames("p-2", {
                     ["bg-blue-200"]: dndState.draggedId === id,
