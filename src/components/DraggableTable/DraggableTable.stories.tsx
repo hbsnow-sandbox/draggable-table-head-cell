@@ -13,14 +13,14 @@ const Template: Story<Props> = (args) => <DraggableTable {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  rows: [
-    { id: "row-1", value: "row 1" },
-    { id: "row-2", value: "row 2" },
-    { id: "row-3", value: "row 3" },
-    { id: "row-4", value: "row 4" },
-    { id: "row-5", value: "row 5" },
-  ],
   columns: [
+    { id: "column-1", value: "column 1" },
+    { id: "column-2", value: "column 2" },
+    { id: "column-3", value: "column 3" },
+    { id: "column-4", value: "column 4" },
+    { id: "column-5", value: "column 5" },
+  ],
+  rows: [
     ["1", "2", "3", "4", "5"],
     ["1", "2", "3", "4", "5"],
     ["1", "2", "3", "4", "5"],

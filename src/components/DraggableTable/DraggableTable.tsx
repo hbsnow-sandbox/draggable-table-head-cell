@@ -14,16 +14,16 @@ import { useOrderedCells } from "./useOrderedCells";
 
 export type Props = Readonly<
   {
-    rows: { id: string; value: string }[];
-    columns: string[][];
+    columns: { id: string; value: string }[];
+    rows: string[][];
   } & Omit<ComponentPropsWithoutRef<"table">, "className">
 >;
 
 export const DraggableTable = forwardRef<HTMLTableElement, Props>(
   (props, ref) => {
-    const { rows, columns, ...rest } = props;
+    const { columns, rows, ...rest } = props;
 
-    const [ordered, changeOrder] = useOrderedCells(rows, columns);
+    const [ordered, changeOrder] = useOrderedCells(columns, rows);
 
     const [dndState, { dragStart, dragEnter, dragLeave, drop, dragEnd }] =
       useDnD();
@@ -56,7 +56,7 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
       <table ref={ref} {...rest}>
         <thead>
           <tr>
-            {ordered.rows.map(({ id, value }) => (
+            {ordered.columns.map(({ id, value }) => (
               <td
                 key={id}
                 className={classnames(
@@ -88,9 +88,9 @@ export const DraggableTable = forwardRef<HTMLTableElement, Props>(
           </tr>
         </thead>
         <tbody>
-          {ordered.columns.map((column, i) => (
+          {ordered.rows.map((row, i) => (
             <tr key={i}>
-              {column.map((item, j) => (
+              {row.map((item, j) => (
                 <td
                   key={j}
                   className={classnames("border", "border-gray-400", "p-2")}

@@ -4,33 +4,31 @@ import { Props } from ".";
 import { swap } from "../../utils/swap";
 
 export const useOrderedCells = (
-  rows: Props["rows"],
-  columns: Props["columns"]
+  columns: Props["columns"],
+  rows: Props["rows"]
 ) => {
-  const [orderedRows, setOrderedRows] = useState(rows);
   const [orderedColumns, setOrderedColumns] = useState(columns);
+  const [orderedRows, setOrderedRows] = useState(rows);
 
   const changeOrder = useCallback(
     (fromId: string | undefined, toId: string | undefined) => {
       if (fromId === undefined || toId === undefined || fromId === toId) {
         return;
       }
-      const fromIndex = rows.findIndex(({ id }) => id === fromId);
-      const toIndex = rows.findIndex(({ id }) => id === toId);
+      const fromIndex = columns.findIndex(({ id }) => id === fromId);
+      const toIndex = columns.findIndex(({ id }) => id === toId);
 
-      // rows を desiredSort の順に並び替える
-      const resultRows = swap(rows, fromIndex, toIndex);
+      // columns を desiredSort の順に並び替える
+      const resultColumns = swap(columns, fromIndex, toIndex);
 
-      // columns の中の配列を desiredSort の順に並び替える
-      const resultColumns = columns.map((column) =>
-        swap(column, fromIndex, toIndex)
-      );
+      // rows の中の配列を desiredSort の順に並び替える
+      const resultRows = rows.map((row) => swap(row, fromIndex, toIndex));
 
-      setOrderedRows(resultRows);
       setOrderedColumns(resultColumns);
+      setOrderedRows(resultRows);
     },
     [columns, rows]
   );
 
-  return [{ rows: orderedRows, columns: orderedColumns }, changeOrder] as const;
+  return [{ columns: orderedColumns, rows: orderedRows }, changeOrder] as const;
 };
